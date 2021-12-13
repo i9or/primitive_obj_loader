@@ -45,7 +45,9 @@ void renderScene() {
     auto v1 = modelToRender.vertices.at(face.vi1 - 1);
     auto v2 = modelToRender.vertices.at(face.vi2 - 1);
     auto v3 = modelToRender.vertices.at(face.vi3 - 1);
+    auto n = modelToRender.normals.at(face.ni1 - 1);
 
+    glNormal3f(n.x, n.y, n.z);
     glVertex3f(v1.x, v1.y, v1.z);
     glVertex3f(v2.x, v2.y, v2.z);
     glVertex3f(v3.x, v3.y, v3.z);
@@ -62,11 +64,17 @@ bool init() {
   glutInitWindowSize(320, 240);
   glutCreateWindow("Primitive OBJ Loader");
 
+  GLfloat light_position[] = { 5.0, 5.0, 5.0, 1.0 };
+  glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+
+  glEnable(GL_DEPTH_TEST);
+
   glutDisplayFunc(renderScene);
   glutReshapeFunc(changeSize);
   glutIdleFunc(renderScene);
-
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   std::cout << "\nGL_VERSION " << glGetString(GL_VERSION) << "\nGL_VENDOR "
             << glGetString(GL_VENDOR) << "\nGL_RENDERER "
@@ -75,7 +83,7 @@ bool init() {
             << std::endl;
 
   // load model here
-  auto loadedModel = load_obj("assets/box.obj.model");
+  auto loadedModel = load_obj("assets/bunny.obj.model");
 
   if (!loadedModel) {
     return false;
